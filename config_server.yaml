@@ -1,0 +1,50 @@
+analysis:
+  sample: [4SISKON_S16_L001, 9SISKON_S22_L002, 4SISKON_S16_L002, 9SIS_S21_L001, 11SIS_S23_L002, 8SISKON_S20_L001, 4SIS_S15_L001]
+  control: [9SIS_S21_L002, 15SISKON_S26_L001, 8SISKON_S20_L002, 4SIS_S15_L002, 15SISKON_S26_L002, 8SIS_S19_L001, 5SISKON_S18_L001]
+  type: paired
+  data_dir: /home/shared/Sisko_Transcriptome/SISKO_Transcriptome
+
+required:
+  threads: 24
+  trimmomatic:
+    leading: 3
+    trailing: 3
+    minlen: 36
+  star:
+    index_whole_genome: /home/bgurdamar/rnaseq/required_files/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+    star_gtf: /home/bgurdamar/rnaseq/required_files/Homo_sapiens.GRCh38.102.gtf
+    genomeSAsparseD: 3
+    genomeGenerate: genomeGenerate
+    limitGenomeGenerateRAM: 164282414959
+    genomeSAindexNbases: 12
+    genomeChrBinNbits: 14
+    outSAMtype: BAM Unsorted
+    twopassMode: Basic
+    twopass1readsN: -1
+    readFilesCommand: zcat
+  trimmomatic:
+    leading: 3
+    trailing: 3
+    minlen: 36
+  salmon:
+    library_type: A
+    # wholegenome_transcript: /home/bgurdamar/rnaseq/required_files/all_transcripts.fa
+    salmon_cdna: /home/bgurdamar/rnaseq/required_files/Homo_sapiens.GRCh38.cdna.all.fa
+  pathfindr:
+    p_val_threshold: 0.1
+    iterations: 10
+    gene_name_converter: /home/bgurdamar/rnaseq/required_files/mart_export.txt
+
+paths:
+  qc: /home/bgurdamar/rnaseq/results/qc
+  multiqc: /home/bgurdamar/rnaseq/results/multiqc
+  trim: /home/bgurdamar/rnaseq/results/trim
+  adapters_paired: /home/bgurdamar/rnaseq/required_files/adapters/TruSeq3-PE.fa
+  adapters_single: /home/bgurdamar/rnaseq/required_files/adapters/TruSeq3-SE.fa
+  star_index: /home/bgurdamar/rnaseq/index_genome
+  gffread_file_path: /home/bgurdamar/rnaseq/required_files
+  star_alignment: /home/bgurdamar/rnaseq/results/aligned_files
+  salmon: /home/bgurdamar/rnaseq/results/salmon_results
+  deseq: /home/bgurdamar/rnaseq/results/deseq_results
+  tx2gene: /home/bgurdamar/rnaseq/required_files/tx2gene.gencode.v27.csv
+  pathfindr: /home/bgurdamar/rnaseq/results/pathfindR_results
