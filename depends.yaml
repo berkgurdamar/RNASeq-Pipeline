@@ -1,3 +1,10 @@
+##################################################
+## Project: RNASeq
+## Purpose: yaml file for creating conda env
+## Date: July 2021
+## Author: Berk Gürdamar
+##################################################
+
 name: rnaseq
 channels:
     - conda-forge
@@ -9,14 +16,15 @@ dependencies:
     - fastqc
     - multiqc=1.7
     - snakemake
-    - trimmomatic
+    - trim-galore
     - star
     - salmon
+    - gffread
     - r-base=4.0.3
     - bioconductor-tximport
     - bioconductor-deseq2
     - r-devtools
-    - r-magick
+    # - r-magick
     - bioconductor-biomart
     # options(unzip = 'internal')
-    # devtools::install_github("grimbough/biomaRt")
+    # devtools::install_github("egeulgen/pathfindR")

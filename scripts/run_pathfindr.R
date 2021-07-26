@@ -1,4 +1,9 @@
-
+##################################################
+## Project: RNASeq
+## Purpose: automated pathfindR script
+## Date: July 2021
+## Author: Berk Gürdamar
+##################################################
 
 deseq_out <- read.csv2(snakemake@input[["pathfindr_input"]])
 gene_Name_converter <- read.csv2(snakemake@params[["gene_name_converter"]], sep = ",")
@@ -14,8 +19,8 @@ pathfindr_in <- dplyr::left_join(deseq_out, gene_Name_converter, by = "Gene.stab
 
 
 
-neoadj_pathfindr_result <- pathfindR::run_pathfindR(pathfindr_in, 
-                                                    n_processes = snakemake@params[["threads"]], 
-                                                    p_val_threshold = snakemake@params[["p_val_threshold"]], 
+neoadj_pathfindr_result <- pathfindR::run_pathfindR(pathfindr_in,
+                                                    n_processes = snakemake@params[["threads"]],
+                                                    p_val_threshold = snakemake@params[["p_val_threshold"]],
                                                     iterations = snakemake@params[["iterations"]],
                                                     output_dir = snakemake@output[["pathfindr_output"]])

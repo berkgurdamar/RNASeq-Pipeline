@@ -1,5 +1,9 @@
-#tx2gene <- read.csv2(snakemake@params[["tx2gene"]], sep = ",")
-
+##################################################
+## Project: RNASeq
+## Purpose: automated deseq2 script
+## Date: July 2021
+## Author: Berk Gürdamar
+##################################################
 
 
 mart <- biomaRt::useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
@@ -7,11 +11,11 @@ mart <- biomaRt::useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
 transcript_ids <- read.csv2(snakemake@input[["deseq_input"]][1], sep = "\t")[,1]
 
 
-res <- biomaRt::getBM(attributes = c('ensembl_transcript_id', 
-                                     'ensembl_gene_id', 
+res <- biomaRt::getBM(attributes = c('ensembl_transcript_id',
+                                     'ensembl_gene_id',
                                      'external_transcript_name',
                                      'external_gene_name'),
-                      filters = 'ensembl_transcript_id', 
+                      filters = 'ensembl_transcript_id',
                       values = transcript_ids,
                       mart = mart)
 
@@ -43,7 +47,7 @@ write.csv2(count_info, snakemake@params[["info_table"]])
 
 deseq_obj <- DESeq2::DESeqDataSetFromMatrix(countData = round(count_table), colData = count_info, design = ~ num_vec)
 run_deseq <- DESeq2::DESeq(deseq_obj)
-deseq_result <- as.data.frame(DESeq2::results(run_deseq, 
+deseq_result <- as.data.frame(DESeq2::results(run_deseq,
                                               contrast = c("num_vec", "1", "0")))
 
 deseq_result <- deseq_result[order(deseq_result$padj),]
