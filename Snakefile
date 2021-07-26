@@ -1,27 +1,46 @@
+##################################################
+## Project: RNASeq
+## Purpose: Main Snakefile
+## Date: July 2021
+## Author: Berk Gürdamar
+##################################################
+
+
 SAMPLES = config["analysis"]["sample"] + config["analysis"]["control"]
 PATH_SAMPLE = config["analysis"]["data_dir"]
-PATH_QC = config["paths"]["qc"]
-PATH_TRIM = config["paths"]["trim"]
-#PATH_ADAPTER = config["paths"]["adapters"]
-PATH_TRANSCRIPT_FA = config["paths"]["gffread_file_path"]
-PATH_STAR_IND = config["paths"]["star_index"]
-PATH_STAR_ALIGN = config["paths"]["star_alignment"]
-PATH_SALMON = config["paths"]["salmon"]
-PATH_DESEQ = config["paths"]["deseq"]
-PATH_PATHFINDR = config["paths"]["pathfindr"]
+PATH_QC = os.path.join(PATH_SAMPLE, "qc")
+PATH_TRIM = os.path.join(PATH_SAMPLE, "trimming")
+PATH_TRANSCRIPT_FA = os.path.join(PATH_SAMPLE, "gffread_file_path")
+PATH_STAR_IND = config["required"]["star"]["star_index"]
+PATH_STAR_ALIGN = os.path.join(PATH_SAMPLE, "star_alignment")
+PATH_SALMON = os.path.join(PATH_SAMPLE, "salmon")
+PATH_DESEQ = os.path.join(PATH_SAMPLE, "deseq")
+PATH_DESEQ_SCRIPT = config["paths"]["deseq_script_path"]
+PATH_PATHFINDR_SCRIPT = config["paths"]["pathfindr_script_path"]
+PATH_PATHFINDR = os.path.join(PATH_SAMPLE, "pathfindr")
 
 
 
-
-# RULE_ALL = expand(os.path.join(PATH_SALMON, "{sample}", "quant.sf"), sample = SAMPLES)
-RULE_ALL = expand(os.path.join(PATH_SALMON, "quant_from_bam", "{sample}", "quant.sf"), sample = SAMPLES)
-#RULE_ALL = expand(os.path.join(PATH_STAR_ALIGN, "{sample}", "Aligned.out.bam"), sample = SAMPLES)
-# RULE_ALL = [os.path.join(PATH_DESEQ, "deseq_output.csv")]
-# RULE_ALL = [PATH_PATHFINDR]
-if config["analysis"]["type"] == "paired":
-   RULE_ALL += expand(os.path.join(PATH_QC, "{sample}_{FR}_fastqc.html"), sample = SAMPLES, FR = [R1, R2])
+if config["analysis"]["output"] == "trimming":
+    if config["analysis"]["type"] == "paired":
+        RULE_ALL = expand(os.path.join(PATH_TRIM, "{sample}_1_val_1.fq.gz"), sample = SAMPLES)
+        RULE_ALL += expand(os.path.join(PATH_TRIM, "{sample}_2_val_2.fq.gz"), sample = SAMPLES)
+    else:
+        out_fq1 = expand(os.path.join(PATH_TRIM, "{sample}_trimmed.fq.gz"), sample = SAMPLES)
+elif config["analysis"]["output"] == "mapping":
+    RULE_ALL = expand(os.path.join(PATH_STAR_ALIGN, "{sample}", "Aligned.toTranscriptome.out.bam"), sample = SAMPLES)
+elif config["analysis"]["output"] == "quantification":
+    RULE_ALL = expand(os.path.join(PATH_SALMON, "quant_from_bam", "{sample}", "quant.sf"), sample = SAMPLES)
+elif config["analysis"]["output"] == "diff_exp":
+    RULE_ALL = os.path.join(PATH_DESEQ, "deseq_output.csv")
 else:
-   RULE_ALL += expand(os.path.join(PATH_QC, "{sample}_fastqc.html"), sample = SAMPLES)
+    RULE_ALL = [PATH_PATHFINDR]
+
+if config["analysis"]["is_fastqc"] == "YES":
+    if config["analysis"]["type"] == "paired":
+       RULE_ALL += expand(os.path.join(PATH_QC, "{sample}_{FR}_fastqc.html"), sample = SAMPLES, FR = [1, 2])
+    else:
+       RULE_ALL += expand(os.path.join(PATH_QC, "{sample}_fastqc.html"), sample = SAMPLES)
 # RULE_ALL += os.path.join(PATH_MULTIQC, "multiqc_report.html")
 
 rule all:
@@ -29,13 +48,15 @@ rule all:
 
 
 
+
+
 rule run_fastqc:
     input:
-        input_fq = os.path.join(PATH_SAMPLE, "{fq_name}_001.fastq.gz")
+        input_fq = os.path.join(PATH_SAMPLE, "{fq_name}.fastq.gz")
     output:
         out_html = os.path.join(PATH_QC, "{fq_name}_fastqc.html")
     params:
-        threads = config["required"]["threads"],
+        threads = round(config["required"]["threads"]/(len(SAMPLES)*2)),
         outdir = PATH_QC
     shell:
         "fastqc --outdir {params.outdir} --threads {params.threads} --quiet --noextract {input.input_fq}"
@@ -62,49 +83,40 @@ rule run_fastqc:
 
 
 
+
 if config["analysis"]["type"] == "paired":
-    rule run_trimmomatic_paired:
+    rule trimgalore:
         input:
-            sample1= os.path.join(PATH_SAMPLE, "{fq_name}_R1_001.fastq.gz"),
-            sample2= os.path.join(PATH_SAMPLE, "{fq_name}_R2_001.fastq.gz")
+            sample1 = os.path.join(PATH_SAMPLE, "{fq_name}_1.fastq.gz"),
+            sample2 = os.path.join(PATH_SAMPLE, "{fq_name}_2.fastq.gz")
         output:
-            R1_paired = os.path.join(PATH_TRIM, "{fq_name}_R1_paired.fastq.gz"),
-            R1_unpaired = os.path.join(PATH_TRIM, "{fq_name}_R1_unpaired.fastq.gz"),
-            R2_paired = os.path.join(PATH_TRIM, "{fq_name}_R2_paired.fastq.gz"),
-            R2_unpaired = os.path.join(PATH_TRIM, "{fq_name}_R2_unpaired.fastq.gz")
+            out_fq1 = os.path.join(PATH_TRIM, "{fq_name}_1_val_1.fq.gz"),
+            out_fq2 = os.path.join(PATH_TRIM, "{fq_name}_2_val_2.fq.gz")
         params:
-            threads = config["required"]["threads"],
-            clip_path = config["paths"]["adapters_paired"],
-            leading =  config["required"]["trimmomatic"]["leading"],
-            trailing = config["required"]["trimmomatic"]["trailing"],
-            minlen = config["required"]["trimmomatic"]["minlen"]
+            cores = round(config["required"]["threads"]/(len(SAMPLES)*2)),
+            outdir = PATH_TRIM,
+            quality = config["required"]["trimgalore"]["quality"],
+            length = config["required"]["trimgalore"]["length"]
         shell:
             """
-            trimmomatic PE -threads {params.threads} -phred33 \
-            {input.sample1} {input.sample2} \
-            {output.R1_paired} {output.R1_unpaired} \
-    		{output.R2_paired} {output.R2_unpaired} ILLUMINACLIP:{params.clip_path}:2:30:10:2:keepBothReads \
-			LEADING:{params.leading} TRAILING:{params.trailing} MINLEN:{params.minlen}
+            trim_galore --phred33 --quality {params.quality} --gzip --length {params.length} \
+            --trim-n --output_dir {params.outdir} --retain_unpaired --cores {params.cores} --paired {input.sample1} {input.sample2}
             """
 else:
-    rule run_trimmomatic_single:
+    rule trimgalore:
         input:
-            sample = os.path.join(PATH_SAMPLE, "{fq_name}.fastq.gz")
+            sample1 = os.path.join(PATH_SAMPLE, "{fq_name}.fastq.gz")
         output:
-            out = os.path.join(PATH_TRIM, "{fq_name}_trimmed.fastq.gz")
+            out_fq1 = os.path.join(PATH_TRIM, "{fq_name}_trimmed.fq.gz")
         params:
-            threads = config["required"]["threads"],
-            clip_path = config["paths"]["adapters_single"],
-            leading =  config["required"]["trimmomatic"]["leading"],
-            trailing = config["required"]["trimmomatic"]["trailing"],
-            minlen = config["required"]["trimmomatic"]["minlen"]
+            cores = round(config["required"]["threads"]/(len(SAMPLES)*2)),
+            outdir = PATH_TRIM,
+            quality = config["required"]["trimgalore"]["quality"],
+            length = config["required"]["trimgalore"]["length"]
         shell:
             """
-            trimmomatic SE -threads {params.threads} -phred33 \
-            {input.sample} \
-            {output.out} \
-    		ILLUMINACLIP:{params.clip_path}:2:30:10 \
-			LEADING:{params.leading} TRAILING:{params.trailing} MINLEN:{params.minlen}
+            trim_galore --phred33 --quality {params.quality} --gzip --length {params.length} \
+            --trim-n --output_dir {params.outdir} --cores {params.cores} {input.sample1}
             """
 
 
@@ -133,13 +145,13 @@ rule run_star_index:
 if config["analysis"]["type"] == "paired":
     rule run_star_align_paired:
         input:
-            input_fasta1 = os.path.join(PATH_TRIM, "{fq_name}_R1_paired.fastq.gz"),
-            input_fasta2 = os.path.join(PATH_TRIM, "{fq_name}_R2_paired.fastq.gz"),
+            input_fasta1 = os.path.join(PATH_TRIM, "{fq_name}_1_val_1.fq.gz"),
+            input_fasta2 = os.path.join(PATH_TRIM, "{fq_name}_2_val_2.fq.gz"),
             genome_idx = PATH_STAR_IND
         output:
             out_name = os.path.join(PATH_STAR_ALIGN, "{fq_name}", "Aligned.toTranscriptome.out.bam")
         params:
-            threads = config["required"]["threads"],
+            threads = round(config["required"]["threads"]/len(SAMPLES)),
             readFilesCommand = config["required"]["star"]["readFilesCommand"],
             outSAMtype = config["required"]["star"]["outSAMtype"],
             twopassMode = config["required"]["star"]["twopassMode"],
@@ -152,17 +164,18 @@ if config["analysis"]["type"] == "paired":
             --readFilesIn  {input.input_fasta1}  {input.input_fasta2}  \
             --readFilesCommand {params.readFilesCommand}  \
             --outSAMtype {params.outSAMtype} \
+            --twopassMode {params.twopassMode} \
             --outFileNamePrefix {params.out_file}/
             """
 else:
     rule run_star_align_single:
         input:
-            input_fasta = os.path.join(PATH_TRIM, "{fq_name}_trimmed.fastq.gz"),
+            input_fasta = os.path.join(PATH_TRIM, "{fq_name}_trimmed.fq.gz"),
             genome_idx = PATH_STAR_IND
         output:
             out_name = os.path.join(PATH_STAR_ALIGN, "{fq_name}", "Aligned.toTranscriptome.out.bam")
         params:
-            threads = config["required"]["threads"],
+            threads = round(config["required"]["threads"]/len(SAMPLES)),
             readFilesCommand = config["required"]["star"]["readFilesCommand"],
             outSAMtype = config["required"]["star"]["outSAMtype"],
             twopassMode = config["required"]["star"]["twopassMode"],
@@ -171,12 +184,11 @@ else:
 
         shell:
             """
-            STAR --genomeDir {input.genome_idx}  --runThreadN {params.threads} \
+            STAR --runMode alignReads --genomeDir {input.genome_idx} --quantMode TranscriptomeSAM --runThreadN {params.threads} \
             --readFilesIn  {input.input_fasta} \
             --readFilesCommand {params.readFilesCommand}  \
             --outSAMtype {params.outSAMtype} \
             --twopassMode {params.twopassMode} \
-            --twopass1readsN {params.twopass1readsN} \
             --outFileNamePrefix {params.out_file}/
             """
 
@@ -238,7 +250,7 @@ rule run_salmon:
     output:
         out_name = os.path.join(PATH_SALMON, "quant_from_bam", "{fq_name}", "quant.sf")
     params:
-        threads = config["required"]["threads"],
+        threads = round(config["required"]["threads"]/len(SAMPLES)),
         library_type = config["required"]["salmon"]["library_type"],
         out_dir = directory(os.path.join(PATH_SALMON, "quant_from_bam", "{fq_name}"))
     shell:
@@ -250,16 +262,16 @@ rule run_salmon:
 
 rule run_deseq:
     input:
-        deseq_input = expand(os.path.join(PATH_SALMON, "{fq_name}", "quant.sf"), fq_name = SAMPLES)
+        deseq_input = expand(os.path.join(PATH_SALMON, "quant_from_bam", "{fq_name}", "quant.sf"), fq_name = SAMPLES)
     output:
         deseq_output = os.path.join(PATH_DESEQ, "deseq_output.csv")
     params:
         control_ids = config["analysis"]["control"],
         sample_ids = config["analysis"]["sample"],
-        tx2gene = config["paths"]["tx2gene"],
-        count_table = os.path.join(PATH_DESEQ, "count_table.csv")
+        count_table = os.path.join(PATH_DESEQ, "count_table.csv"),
+        script_path = PATH_DESEQ_SCRIPT
     script:
-        "scripts/run_deseq.R"
+        "{params.script_path}/run_deseq.R"
 
 
 
@@ -272,6 +284,7 @@ rule run_pathfindr:
         threads = config["required"]["threads"],
         p_val_threshold = config["required"]["pathfindr"]["p_val_threshold"],
         iterations = config["required"]["pathfindr"]["iterations"],
-        gene_name_converter = config["required"]["pathfindr"]["gene_name_converter"]
+        gene_name_converter = config["required"]["pathfindr"]["gene_name_converter"],
+        script_path = PATH_PATHFINDR
     script:
-        "scripts/run_pathfindr.R"
+        "{params.script_path}/run_pathfindr.R"
