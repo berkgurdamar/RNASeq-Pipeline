@@ -20,6 +20,8 @@ pathfindr_in <- dplyr::left_join(deseq_out, gene_Name_converter, by = "Gene.stab
 
 
 neoadj_pathfindr_result <- pathfindR::run_pathfindR(pathfindr_in,
+                                                    plot_enrichment_chart = F,
+                                                    visualize_enriched_terms = F,
                                                     n_processes = snakemake@params[["threads"]],
                                                     p_val_threshold = snakemake@params[["p_val_threshold"]],
                                                     iterations = snakemake@params[["iterations"]],
