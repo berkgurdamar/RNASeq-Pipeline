@@ -1,7 +1,7 @@
 ##################################################
 ## Project: RNASeq
 ## Purpose: automated deseq2 script
-## Date: July 2021
+## Date: August 2021
 ## Author: Berk Gürdamar
 ##################################################
 
@@ -23,7 +23,6 @@ final_res <- res[, c(1,2)]
 colnames(final_res) <- c("tx_name", "gene_id")
 
 
-
 txi <- tximport::tximport(snakemake@input[["deseq_input"]], type = "salmon", tx2gene = final_res)
 count_table <- as.data.frame(txi$counts)
 colnames(count_table) <- snakemake@input[["deseq_input"]]
@@ -32,20 +31,52 @@ colnames(count_table) <- snakemake@input[["deseq_input"]]
 write.csv2(count_table, snakemake@params[["count_table"]])
 
 
-
 sample <- snakemake@params[["sample_ids"]]
 
+if(snakemake@params[["replicates"]] == "YES"){
 
-num_vec <- rep(0, length(colnames(count_table)))
-num_vec[sapply(sample, function(x) grep(x, colnames(count_table)))] <- 1
-sample_names <- colnames(count_table)
-count_info <- as.data.frame(cbind(sample_names, num_vec))
+  matched_samples <- snakemake@params[["matched_samples"]]
 
-count_info$num_vec <- as.factor(count_info$num_vec)
+  sample_list <- list()
+  for(i in matched_samples){
+    idx <- strsplit(i, "_")[[1]]
+    sample_list[[length(sample_list) + 1]] <- idx
+  }
 
-write.csv2(count_info, snakemake@params[["info_table"]])
+  num_vec <- rep(0, length(colnames(count_table)))
+  num_vec[sapply(sample, function(x) grep(x, colnames(count_table)))] <- 1
+  sample_names <- colnames(count_table)
+  count_info <- as.data.frame(cbind(sample_names, num_vec))
 
-deseq_obj <- DESeq2::DESeqDataSetFromMatrix(countData = round(count_table), colData = count_info, design = ~ num_vec)
+  count_info$num_vec <- as.factor(count_info$num_vec)
+  count_info$rep_info <- 0
+
+  group_id <- 0
+  for(i in sample_list){
+    for(j in i){
+      count_info$rep_info[grep(j, count_info$sample_names)] <- group_id
+    }
+    group_id <- group_id + 1
+  }
+  write.csv2(count_info, snakemake@params[["info_table"]])
+
+  deseq_obj <- DESeq2::DESeqDataSetFromMatrix(countData = round(count_table), colData = count_info, design = ~ num_vec)
+  deseq_obj <- DESeq2::collapseReplicates(deseq_obj, count_info$rep_info, count_info$sample_names)
+
+
+}else{
+  num_vec <- rep(0, length(colnames(count_table)))
+  num_vec[sapply(sample, function(x) grep(x, colnames(count_table)))] <- 1
+  sample_names <- colnames(count_table)
+  count_info <- as.data.frame(cbind(sample_names, num_vec))
+
+  count_info$num_vec <- as.factor(count_info$num_vec)
+
+  write.csv2(count_info, snakemake@params[["info_table"]])
+
+  deseq_obj <- DESeq2::DESeqDataSetFromMatrix(countData = round(count_table), colData = count_info, design = ~ num_vec)
+}
+
 run_deseq <- DESeq2::DESeq(deseq_obj)
 deseq_result <- as.data.frame(DESeq2::results(run_deseq,
                                               contrast = c("num_vec", "1", "0")))
