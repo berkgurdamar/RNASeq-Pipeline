@@ -1,9 +1,10 @@
 ##################################################
 ## Project: RNASeq
 ## Purpose: Main Snakefile
-## Date: July 2021
+## Date: August 2021
 ## Author: Berk Gürdamar
 ##################################################
+
 
 
 SAMPLES = config["analysis"]["sample"] + config["analysis"]["control"]
@@ -15,9 +16,8 @@ PATH_STAR_IND = config["required"]["star"]["star_index"]
 PATH_STAR_ALIGN = os.path.join(PATH_SAMPLE, "star_alignment")
 PATH_SALMON = os.path.join(PATH_SAMPLE, "salmon")
 PATH_DESEQ = os.path.join(PATH_SAMPLE, "deseq")
-PATH_DESEQ_SCRIPT = config["paths"]["deseq_script_path"]
-PATH_PATHFINDR_SCRIPT = config["paths"]["pathfindr_script_path"]
 PATH_PATHFINDR = os.path.join(PATH_SAMPLE, "pathfindr")
+MATCHED_SAMPLES = config["analysis"]["matched_samples"]
 
 
 
@@ -26,13 +26,13 @@ if config["analysis"]["output"] == "trimming":
         RULE_ALL = expand(os.path.join(PATH_TRIM, "{sample}_1_val_1.fq.gz"), sample = SAMPLES)
         RULE_ALL += expand(os.path.join(PATH_TRIM, "{sample}_2_val_2.fq.gz"), sample = SAMPLES)
     else:
-        out_fq1 = expand(os.path.join(PATH_TRIM, "{sample}_trimmed.fq.gz"), sample = SAMPLES)
+        RULE_ALL = expand(os.path.join(PATH_TRIM, "{sample}_trimmed.fq.gz"), sample = SAMPLES)
 elif config["analysis"]["output"] == "mapping":
     RULE_ALL = expand(os.path.join(PATH_STAR_ALIGN, "{sample}", "Aligned.toTranscriptome.out.bam"), sample = SAMPLES)
 elif config["analysis"]["output"] == "quantification":
     RULE_ALL = expand(os.path.join(PATH_SALMON, "quant_from_bam", "{sample}", "quant.sf"), sample = SAMPLES)
 elif config["analysis"]["output"] == "diff_exp":
-    RULE_ALL = os.path.join(PATH_DESEQ, "deseq_output.csv")
+    RULE_ALL = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0] + "_" + config["analysis"]["control"][0], "deseq_output.csv")
 else:
     RULE_ALL = [PATH_PATHFINDR]
 
@@ -264,27 +264,28 @@ rule run_deseq:
     input:
         deseq_input = expand(os.path.join(PATH_SALMON, "quant_from_bam", "{fq_name}", "quant.sf"), fq_name = SAMPLES)
     output:
-        deseq_output = os.path.join(PATH_DESEQ, "deseq_output.csv")
+        deseq_output = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0] + "_" + config["analysis"]["control"][0], "deseq_output.csv")
     params:
         control_ids = config["analysis"]["control"],
         sample_ids = config["analysis"]["sample"],
-        count_table = os.path.join(PATH_DESEQ, "count_table.csv"),
-        script_path = PATH_DESEQ_SCRIPT
+        count_table = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0] + "_" + config["analysis"]["control"][0], "count_table.csv"),
+        info_table = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0] + "_" + config["analysis"]["control"][0], "info_table.csv"),
+        replicates = config["analysis"]["replicate"],
+        matched_samples = MATCHED_SAMPLES
     script:
-        "{params.script_path}/run_deseq.R"
+        "scripts/run_deseq.R"
 
 
 
 rule run_pathfindr:
     input:
-        pathfindr_input = os.path.join(PATH_DESEQ, "deseq_output.csv")
+        pathfindr_input = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0] + "_" + config["analysis"]["control"][0], "deseq_output.csv")
     output:
         pathfindr_output = directory(PATH_PATHFINDR)
     params:
         threads = config["required"]["threads"],
         p_val_threshold = config["required"]["pathfindr"]["p_val_threshold"],
         iterations = config["required"]["pathfindr"]["iterations"],
-        gene_name_converter = config["required"]["pathfindr"]["gene_name_converter"],
-        script_path = PATH_PATHFINDR
+        gene_name_converter = config["required"]["pathfindr"]["gene_name_converter"]
     script:
-        "{params.script_path}/run_pathfindr.R"
+        "scripts/run_pathfindr.R"
