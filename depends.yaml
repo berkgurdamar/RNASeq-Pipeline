@@ -1,11 +1,11 @@
 ##################################################
 ## Project: RNASeq
 ## Purpose: yaml file for creating conda env
-## Date: July 2021
+## Date: August 2021
 ## Author: Berk Gürdamar
 ##################################################
 
-name: rnaseq
+name: rnaseq2
 channels:
     - conda-forge
     - bioconda
@@ -20,11 +20,15 @@ dependencies:
     - star
     - salmon
     - gffread
-    - r-base=4.0.3
-    - bioconductor-tximport
-    - bioconductor-deseq2
+    - pandoc
+    - r-base=4.1.0
+    - r-magick
+    - r-yaml
     - r-devtools
-    # - r-magick
+    - r-knitr
+    - bioconductor-tximport
+    - bioconductor-kegggraph
+    - bioconductor-org.hs.eg.db
     - bioconductor-biomart
-    # options(unzip = 'internal')
-    # devtools::install_github("egeulgen/pathfindR")
+    - bioconductor-deseq2
+    # download pathfindR in R without updating any dependency ----> devtools::install_github("egeulgen/pathfindR")
