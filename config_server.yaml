@@ -1,27 +1,29 @@
 ##################################################
 ## Project: RNASeq
 ## Purpose: configuration file
-## Date: July 2021
+## Date: August 2021
 ## Author: Berk Gürdamar
 ##################################################
 
-analysis:  ### "sample_name"_"lane".fastq.qz, lane = 1,2
-  sample: [SRR12976448]
-  control: []
-  type: paired
-  output: pathway_enrichment ### trimming, mapping, quantification, diff_exp, pathway_enrichment
-  is_fastqc: "NO" ### YES, NO
-  data_dir: /mnt/d/atom/projects/rnaseq/sample
+analysis:                                                                       ### "sample_name"_"lane".fastq.qz, lane = 1,2
+  sample: [SRR9162826, SRR9162827]
+  control: [SRR9162824, SRR9162825]
+  replicate: YES                                                                ### YES, NO
+  matched_samples: [SRR9162826_SRR9162827, SRR9162824_SRR9162825]               ### REP1_REP2_REP3..., REP1_REP2_, ... (if replicates == "YES")
+  type: single                                                                  ### paired, single
+  output: diff_exp                                                              ### trimming, mapping, quantification, diff_exp, pathway_enrichment
+  is_fastqc: NO                                                                 ### YES, NO
+  data_dir: /home/bgurdamar/tubitak_rnaseq/samples
 
 required:
-  threads: 6
+  threads: 16
   trimgalore:
     quality: 20
     length: 35
   star:
-    index_whole_genome: /mnt/d/atom/projects/rnaseq/required_files/reference_genome.fa
-    star_gtf: /mnt/d/atom/projects/rnaseq/required_files/gtf_file.gtf
-    star_index: /mnt/d/atom/projects/rnaseq/index_genome
+    index_whole_genome: /home/bgurdamar/tubitak_rnaseq/references/Homo_sapiens.GRCh38.dna.primary_assembly.fa     ### reference genome path
+    star_gtf: /home/bgurdamar/tubitak_rnaseq/references/Homo_sapiens.GRCh38.104.gtf                               ### reference gtf or gff file path
+    star_index: /home/bgurdamar/tubitak_rnaseq/index_genome                     ### path to create index genome (if already exist, automatically use indexed genome at this path)
     genomeSAsparseD: 3
     genomeGenerate: genomeGenerate
     limitGenomeGenerateRAM: 164282414959
@@ -36,8 +38,4 @@ required:
   pathfindr:
     p_val_threshold: 0.1
     iterations: 10
-    gene_name_converter: /mnt/d/atom/projects/rnaseq/required_files/mart_export.txt
-
-paths:
-  deseq_script_path: /mnt/d/atom/projects/rnaseq/scripts
-  pathfindr_script_path: /mnt/d/atom/projects/rnaseq/scripts
+    gene_name_converter: /mnt/d/atom/projects/rnaseq/scripts/mart_export.txt
