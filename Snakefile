@@ -9,14 +9,14 @@
 
 SAMPLES = config["analysis"]["sample"] + config["analysis"]["control"]
 PATH_SAMPLE = config["analysis"]["data_dir"]
-PATH_QC = os.path.join(PATH_SAMPLE, "qc")
-PATH_TRIM = os.path.join(PATH_SAMPLE, "trimming")
-PATH_TRANSCRIPT_FA = os.path.join(PATH_SAMPLE, "gffread_file_path")
+PATH_QC = os.path.join(PATH_SAMPLE, "results", "qc")
+PATH_TRIM = os.path.join(PATH_SAMPLE, "results", "trimming")
+PATH_TRANSCRIPT_FA = os.path.join(PATH_SAMPLE, "results", "gffread_file_path")
 PATH_STAR_IND = config["required"]["star"]["star_index"]
-PATH_STAR_ALIGN = os.path.join(PATH_SAMPLE, "star_alignment")
-PATH_SALMON = os.path.join(PATH_SAMPLE, "salmon")
-PATH_DESEQ = os.path.join(PATH_SAMPLE, "deseq")
-PATH_PATHFINDR = os.path.join(PATH_SAMPLE, "pathfindr")
+PATH_STAR_ALIGN = os.path.join(PATH_SAMPLE, "results", "star_alignment")
+PATH_SALMON = os.path.join(PATH_SAMPLE, "results", "salmon")
+PATH_DESEQ = os.path.join(PATH_SAMPLE, "results", "deseq")
+PATH_PATHFINDR = os.path.join(PATH_SAMPLE, "results", "pathfindr")
 MATCHED_SAMPLES = config["analysis"]["matched_samples"]
 
 

@@ -5,7 +5,7 @@
 ## Author: Berk Gürdamar
 ##################################################
 
-name: rnaseq2
+name: rnaseq
 channels:
     - conda-forge
     - bioconda
@@ -31,4 +31,4 @@ dependencies:
     - bioconductor-org.hs.eg.db
     - bioconductor-biomart
     - bioconductor-deseq2
-    # download pathfindR in R without updating any dependency ----> devtools::install_github("egeulgen/pathfindR")
+    # download pathfindR in R with updating dependencies ----> devtools::install_github("egeulgen/pathfindR")

@@ -1,0 +1,28 @@
+##################################################
+## Project: RNASeq-Pipeline
+## Purpose: Dependency file
+## Date: September 2021
+## Author: Berk Gürdamar
+##################################################
+
+name: rnaseq-pipeline
+channels:
+    - conda-forge
+    - bioconda
+    - anaconda
+    - r
+dependencies:
+    - python=3.6
+    - fastqc
+    - multiqc=1.7
+    - snakemake
+    - trimmomatic
+    - star
+    - salmon
+    - r-base=4.0.3
+    - bioconductor-tximport
+    - bioconductor-deseq2
+    - r-devtools
+    - r-magick
+    - bioconductor-biomart
+    - bioconda::argparse
