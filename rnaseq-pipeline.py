@@ -13,7 +13,7 @@ import yaml
 
 os.environ["COLUMNS"] = "1000"
 
-parser = argparse.ArgumentParser(description = "RNASeq-Pipeline", formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=40))
+parser = argparse.ArgumentParser(description = "RNASeq-Pipeline for Quantification and Enrichment Analysis", formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=40))
 parser.add_argument("-s", "--samples", type = str, metavar = '', required = True, help = "Sample names", nargs='+')
 parser.add_argument("-c", "--controls", type = str, metavar = '', required = True, help = "Control names", nargs='+')
 parser.add_argument("-r", "--replicate", type = str, metavar = '', required = False, default = "NO", help = "Technical replicate condition = YES or NO (default)")
