@@ -51,53 +51,54 @@ def run_pipeline(samples, controls, replicate, replicate_samples, data_dir, refe
                  twopass1readsN, readFilesCommand, library_type, p_val_threshold, iterations,
                  create_DAG):
 
+
+    analysis = dict(
+        analysis = dict(
+            sample = samples, # ", ".join(samples)
+            control = controls, # ", ".join(controls)
+            replicate = replicate,
+            replicate_samples = replicate_samples,
+            data_dir = data_dir,
+            type = type,
+            output = output,
+            is_fastqc = is_fastqc
+        ),
+        required = dict(
+            threads = threads,
+            trimgalore = dict(
+                quality = quality,
+                length = length
+            ),
+            star = dict(
+                reference_genome = reference_genome,
+                star_gtf = gtf_file,
+                star_index = star_index,
+                genomeSAsparseD = genomeSAsparseD,
+                genomeGenerate = runMode,
+                limitGenomeGenerateRAM = limitGenomeGenerateRAM,
+                genomeSAindexNbases = genomeSAindexNbases,
+                genomeChrBinNbits = genomeChrBinNbits,
+                outSAMtype = outSAMtype,
+                twopassMode = twopassMode,
+                twopass1readsN = twopass1readsN,
+                readFilesCommand = readFilesCommand
+            ),
+            salmon = dict(
+                library_type = library_type
+            ),
+            pathfindr = dict(
+                p_val_threshold = p_val_threshold,
+                iterations = iterations
+            )
+        )
+    )
+
+    with open('config.yaml', 'w') as outfile:
+        yaml.dump(analysis, outfile, default_flow_style=False)
+
     if create_DAG == "YES":
         subprocess.run(["""snakemake --configfile config.yaml --dag | dot -Tpdf > pipeline_dag.pdf"""], shell=True)
     else:
-        analysis = dict(
-            analysis = dict(
-                sample = samples, # ", ".join(samples)
-                control = controls, # ", ".join(controls)
-                replicate = replicate,
-                replicate_samples = ", ".join(replicate_samples),
-                data_dir = data_dir,
-                type = type,
-                output = output,
-                is_fastqc = is_fastqc
-            ),
-            required = dict(
-                threads = threads,
-                trimgalore = dict(
-                    quality = quality,
-                    length = length
-                ),
-                star = dict(
-                    reference_genome = reference_genome,
-                    star_gtf = gtf_file,
-                    star_index = star_index,
-                    genomeSAsparseD = genomeSAsparseD,
-                    genomeGenerate = runMode,
-                    limitGenomeGenerateRAM = limitGenomeGenerateRAM,
-                    genomeSAindexNbases = genomeSAindexNbases,
-                    genomeChrBinNbits = genomeChrBinNbits,
-                    outSAMtype = outSAMtype,
-                    twopassMode = twopassMode,
-                    twopass1readsN = twopass1readsN,
-                    readFilesCommand = readFilesCommand
-                ),
-                salmon = dict(
-                    library_type = library_type
-                ),
-                pathfindr = dict(
-                    p_val_threshold = p_val_threshold,
-                    iterations = iterations
-                )
-            )
-        )
-
-        with open('config.yaml', 'w') as outfile:
-            yaml.dump(analysis, outfile, default_flow_style=False)
-
         subprocess.run(["""snakemake --configfile config.yaml --cores {threads}""".format(threads = threads)], shell=True)
 
 
