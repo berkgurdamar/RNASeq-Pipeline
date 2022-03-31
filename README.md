@@ -104,7 +104,8 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
 --create_DAG YES
 ```
 
-<img src="https://github.com/berkgurdamar/RNASeq-Pipeline/blob/main/workflow/pipeline_dag.pdf?raw=true" style="max-width:100%;" />
+
+![RNASeq-Pipeline Workflow](https://github.com/berkgurdamar/RNASeq-Pipeline/blob/main/workflow/pipeline_dag.pdf?raw=true "RNASeq-Pipeline Workflow")
 
 ## Technical Replicates
 
