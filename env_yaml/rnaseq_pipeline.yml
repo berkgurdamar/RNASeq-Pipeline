@@ -1,4 +1,4 @@
-name: rnaseq-pipeline
+name: rnaseq-pipeline1
 channels:
   - bioconda
   - conda-forge
@@ -193,7 +193,9 @@ dependencies:
   - openssl=1.1.1n=h166bdaf_0
   - packaging=21.3=pyhd8ed1ab_0
   - pandas=1.4.1=py39hde0f152_0
+  - pandoc=2.17.1.1=ha770c72_0
   - pango=1.50.6=hbd2fdc8_0
+  - parallel-fastq-dump=0.6.7=pyhdfd78af_0
   - paramiko=2.10.3=pyhd8ed1ab_0
   - pbzip2=1.1.13=0
   - pcre=8.45=h9c3ff4c_0
@@ -379,6 +381,7 @@ dependencies:
   - snakemake=7.3.3=hdfd78af_0
   - snakemake-minimal=7.3.3=pyhdfd78af_0
   - sqlite=3.37.1=h4ff8645_0
+  - sra-tools=2.8.0=0
   - star=2.7.10a=h9ee0642_0
   - stone=3.3.1=pyhd8ed1ab_0
   - stopit=1.1.2=py_0
@@ -427,3 +430,22 @@ dependencies:
   - zipp=3.7.0=pyhd8ed1ab_1
   - zlib=1.2.11=h166bdaf_1014
   - zstd=1.5.2=ha95c52a_0
+  - pip:
+    - click==8.1.1
+    - coloredlogs==15.0.1
+    - colormath==3.0.0
+    - commonmark==0.9.1
+    - cycler==0.11.0
+    - fonttools==4.31.2
+    - future==0.18.2
+    - humanfriendly==10.0
+    - kiwisolver==1.4.2
+    - lzstring==1.0.4
+    - markdown==3.3.6
+    - matplotlib==3.5.1
+    - multiqc==1.12
+    - networkx==2.7.1
+    - pillow==9.0.1
+    - rich==12.0.1
+    - simplejson==3.17.6
+    - spectra==0.0.11
