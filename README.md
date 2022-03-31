@@ -15,15 +15,15 @@
 
  All required packages can be installed using setup.sh script. setup.sh script creates a conda environment called rnaseq-pipeline and downloads all packages in it. 
 
-'''
+```
 bash setup.sh
-'''
+```
  
  ## Usage
 
 All arguments can be seen by using help (-h) command.
 
-'''
+```
 conda activate rnaseq-pipeline
 
 python rnaseq-pipeline.py -h
@@ -64,4 +64,4 @@ optional arguments:
   -C , --gene_name_converter            'mart_export.txt' file path
   -D [], --create_DAG []                Create Directed Acyclic Graph (DAG) of commands (default = NO)
 
-'''
+```
