@@ -9,7 +9,6 @@ mart <- biomaRt::useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
 
 transcript_ids <- read.csv2(snakemake@input[["deseq_input"]][1], sep = "\t")[,1]
 
-
 res <- biomaRt::getBM(attributes = c('ensembl_transcript_id',
                                      'ensembl_gene_id',
                                      'external_transcript_name',
@@ -23,15 +22,14 @@ colnames(final_res) <- c("tx_name", "gene_id")
 
 
 txi <- tximport::tximport(snakemake@input[["deseq_input"]], type = "salmon", tx2gene = final_res)
+
 count_table <- as.data.frame(txi$counts)
 colnames(count_table) <- snakemake@input[["deseq_input"]]
 
+write.csv2(res[,c(1,2,4)], snakemake@params[["gene_name_converter"]])
 
-write.csv2(count_table, snakemake@params[["count_table"]])
 
-write.csv2(res[,c(1,2,4)], "/home/bgurdamar/rnaseq_test/results/deseq/gene_name_converter.csv")
-# write.csv2(res[,c(1,2,4)], snakemake@params[["gene_name_converter"]])
-
+# replicates --------------------------------------------------------------
 
 sample <- snakemake@params[["sample_ids"]]
 
@@ -51,20 +49,20 @@ if(snakemake@params[["replicates"]] == "YES"){
   count_info <- as.data.frame(cbind(sample_names, num_vec))
 
   count_info$num_vec <- as.factor(count_info$num_vec)
-  count_info$rep_info <- 0
+  count_info$rep_info <- 1:nrow(count_info)
 
-  group_id <- 0
+  group_id <- max(count_info$rep_info) + 1
   for(i in sample_list){
     for(j in i){
       count_info$rep_info[grep(j, count_info$sample_names)] <- group_id
     }
     group_id <- group_id + 1
   }
-  write.csv2(count_info, snakemake@params[["info_table"]])
 
   deseq_obj <- DESeq2::DESeqDataSetFromMatrix(countData = round(count_table), colData = count_info, design = ~ num_vec)
   deseq_obj <- DESeq2::collapseReplicates(deseq_obj, count_info$rep_info, count_info$sample_names)
 
+  write.csv2(deseq_obj@assays@data$counts, snakemake@params[["count_table"]])
 
 }else{
   num_vec <- rep(0, length(colnames(count_table)))
@@ -74,9 +72,9 @@ if(snakemake@params[["replicates"]] == "YES"){
 
   count_info$num_vec <- as.factor(count_info$num_vec)
 
-  write.csv2(count_info, snakemake@params[["info_table"]])
-
   deseq_obj <- DESeq2::DESeqDataSetFromMatrix(countData = round(count_table), colData = count_info, design = ~ num_vec)
+
+  write.csv2(deseq_obj@assays@data$counts, snakemake@params[["count_table"]])
 }
 
 run_deseq <- DESeq2::DESeq(deseq_obj)
