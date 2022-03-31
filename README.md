@@ -97,7 +97,7 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 --controls control1 
 --star_index /path/to/target/folder --create_DAG
 ```
 
-<img src="https://github.com/berkgurdamar/RNASeq-Pipeline/blob/main/workflow/pipeline_dag.pdf" style="max-width:100%;" />
+<img src="https://github.com/berkgurdamar/RNASeq-Pipeline/blob/main/workflow/pipeline_dag.pdf?raw=true" style="max-width:100%;" />
 
 ## Technical Replicates
 
