@@ -4,12 +4,12 @@
  RNASeq-Pipeline is a bioinformatics pipeline that can be used for analyzing RNA Sequencing data. 
  RNASeq-Pipeline steps;
  
- - Quality Control with FastQC
- - Trimming with Trim-Galore
- - Mapping with STAR
- - Quantification with Salmon
- - Differential Gene Expression Analysis with DESeq2
- - Enrichment Analysis with pathfindR
+ - Quality Control with [FastQC](https://github.com/s-andrews/FastQC)
+ - Trimming with [Trim-Galore](https://github.com/FelixKrueger/TrimGalore)
+ - Mapping with [STAR](https://github.com/alexdobin/STAR)
+ - Quantification with [Salmon](https://github.com/COMBINE-lab/salmon)
+ - Differential Gene Expression Analysis with [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)
+ - Enrichment Analysis with [pathfindR](https://github.com/egeulgen/pathfindR)
  
 ## Installation
 
