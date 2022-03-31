@@ -105,7 +105,7 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
 ```
 
 
-![RNASeq-Pipeline Workflow](https://github.com/berkgurdamar/RNASeq-Pipeline/blob/main/workflow/pipeline_dag.pdf?raw=true "RNASeq-Pipeline Workflow")
+<img src="https://github.com/berkgurdamar/RNASeq-Pipeline/blob/main/workflow/pipeline_dag.png?raw=true" style="max-width:100%;" />
 
 ## Technical Replicates
 
