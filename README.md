@@ -13,7 +13,7 @@
  
 ## Installation
 
- All required packages can be installed using `setup.sh` script. setup.sh script creates a conda environment called rnaseq-pipeline and downloads all packages in it. 
+ All required packages can be installed using `setup.sh` script. setup.sh script creates a conda environment called `rnaseq-pipeline` and downloads all required packages in it. 
 
 ```
 bash setup.sh
@@ -28,10 +28,10 @@ conda activate rnaseq-pipeline
 ```
 
 
-All arguments can be seen by using `help (-h, --help)` command.
+All arguments can be seen by using `--help` command.
 
 ```
-python rnaseq-pipeline.py -h
+python rnaseq-pipeline.py --help
 ```
 
 
@@ -81,7 +81,7 @@ RNASeq-Pipeline works with gzipped .fastq files. Input names should be;
 
 ## Example Command
 
-If reference genome indexed before, RNASeq-Pipeline automatically uses the path in the `--star_index` argument.
+If reference genome indexed before, RNASeq-Pipeline automatically uses the path in the `--star_index` argument.If not, index genome will be created into the `--star_index` path.
 
 ```
 python rnaseq-pipeline.py --samples sample1 sample2 sample3 --controls control1 control2 control3 \
@@ -97,6 +97,7 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 --controls control1 
 --star_index /path/to/target/folder --create_DAG
 ```
 
+<img src="https://github.com/berkgurdamar/RNASeq-Pipeline/blob/main/workflow/pipeline_dag.pdf?raw=true" style="max-width:100%;" />
 
 ## Technical Replicates
 
@@ -114,3 +115,6 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 sample4 --controls c
 ## Output
 
 All the outputs will be written in seperate folders in the data folder for each step. 
+
+
+
