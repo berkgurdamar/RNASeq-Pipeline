@@ -1,10 +1,9 @@
 ##################################################
 ## Project: RNASeq
 ## Purpose: automated deseq2 script
-## Date: August 2021
+## Date: March 2022
 ## Author: Berk Gürdamar
 ##################################################
-
 
 mart <- biomaRt::useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
 
@@ -29,6 +28,9 @@ colnames(count_table) <- snakemake@input[["deseq_input"]]
 
 
 write.csv2(count_table, snakemake@params[["count_table"]])
+
+write.csv2(res[,c(1,2,4)], "/home/bgurdamar/rnaseq_test/results/deseq/gene_name_converter.csv")
+# write.csv2(res[,c(1,2,4)], snakemake@params[["gene_name_converter"]])
 
 
 sample <- snakemake@params[["sample_ids"]]
