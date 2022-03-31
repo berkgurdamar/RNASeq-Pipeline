@@ -13,20 +13,17 @@ import yaml
 
 os.environ["COLUMNS"] = "1000"
 
-
-# python rnaseq-pipeline.py -s SRR12096780 SRR12096781 SRR12096782 -c SRR12096777 SRR12096778 SRR12096779 -d /home/bgurdamar/rnaseq_test/ -x /home/bgurdamar/tubitak_rnaseq/index_genome -G /home/bgurdamar/tubitak_rnaseq/references/Homo_sapiens.GRCh38.104.gtf -R /home/bgurdamar/tubitak_rnaseq/references/Homo_sapiens.GRCh38.dna.primary_assembly.fa -T 32
-
-parser = argparse.ArgumentParser(description = "Run RNASeq Pipeline", formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=40))
+parser = argparse.ArgumentParser(description = "RNASeq-Pipeline", formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=40))
 parser.add_argument("-s", "--samples", type = str, metavar = '', required = True, help = "Sample names", nargs='+')
 parser.add_argument("-c", "--controls", type = str, metavar = '', required = True, help = "Control names", nargs='+')
-parser.add_argument("-r", "--replicate", type = str, metavar = '', required = False, default = "NO", help = "Technical replicate condition = YES or NO")
+parser.add_argument("-r", "--replicate", type = str, metavar = '', required = False, default = "NO", help = "Technical replicate condition = YES or NO (default)")
 parser.add_argument("-m", "--replicate_samples", type = str, metavar = '', required = False, help = "if --replicate == YES; Comma seperated matched sample names; sample1_sample2, sample3_sample4", nargs='+')
 parser.add_argument("-t", "--type", type = str, metavar = '', required = False, nargs='?', default = "paired", help = "Sample type; paired (default), single")
 parser.add_argument("-o", "--output", type = str, metavar = '', required = False, nargs='?', default = "pathway_enrichment", help = "Final output; pathway_enrichment (default), trimming, mapping, quantification, diff_exp")
 parser.add_argument("-f", "--is_fastqc", type = str, metavar = '', required = False, nargs='?', default = "YES", help = "Run FastQC or not; YES (default), NO")
 parser.add_argument("-d", "--data_dir", type = str, metavar = '', required = True, help = "Data folder direction")
 parser.add_argument("-R", "--reference_genome", type = str, metavar = '', required = True, help = "Reference genome path")
-parser.add_argument("-G", "--star_gtf", type = str, metavar = '', required = True, help = "GTF file path")
+parser.add_argument("-G", "--gtf_file", type = str, metavar = '', required = True, help = "GTF file path")
 parser.add_argument("-x", "--star_index", type = str, metavar = '', required = True, help = "Folder path to create genome index (if already exist, automatically use the indexed genome in the path)")
 parser.add_argument("-T", "--threads", type = int, metavar = '', required = False, nargs='?', default = 16, help = "Number of thread (default = 16)")
 parser.add_argument("-q", "--quality", type = int, metavar = '', required = False, nargs='?', default = 20, help = "Trim galore quality option (default = 20)")
@@ -47,7 +44,7 @@ parser.add_argument("-D", "--create_DAG", type = str, metavar = '', required = F
 args = parser.parse_args()
 
 
-def run_pipeline(samples, controls, replicate, replicate_samples, data_dir, reference_genome, star_gtf, star_index,
+def run_pipeline(samples, controls, replicate, replicate_samples, data_dir, reference_genome, gtf_file, star_index,
                  type, output, is_fastqc, threads, quality,
                  length, genomeSAsparseD, runMode, limitGenomeGenerateRAM,
                  genomeSAindexNbases, genomeChrBinNbits, outSAMtype, twopassMode,
@@ -76,7 +73,7 @@ def run_pipeline(samples, controls, replicate, replicate_samples, data_dir, refe
                 ),
                 star = dict(
                     reference_genome = reference_genome,
-                    star_gtf = star_gtf,
+                    star_gtf = gtf_file,
                     star_index = star_index,
                     genomeSAsparseD = genomeSAsparseD,
                     genomeGenerate = runMode,
@@ -107,7 +104,7 @@ def run_pipeline(samples, controls, replicate, replicate_samples, data_dir, refe
 
 if __name__ == '__main__':
     print(run_pipeline(args.samples, args.controls, args.replicate, args.replicate_samples, args.data_dir, args.reference_genome,
-                       args.star_gtf, args.star_index,args.type, args.output, args.is_fastqc,
+                       args.gtf_file, args.star_index,args.type, args.output, args.is_fastqc,
                        args.threads, args.quality,args.length, args.genomeSAsparseD, args.runMode, args.limitGenomeGenerateRAM,
                        args.genomeSAindexNbases, args.genomeChrBinNbits, args.outSAMtype, args.twopassMode, args.twopass1readsN,
                        args.readFilesCommand, args.library_type, args.p_val_threshold, args.iterations, args.create_DAG))
