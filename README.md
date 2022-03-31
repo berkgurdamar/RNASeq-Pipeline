@@ -13,38 +13,46 @@
  
 ## Installation
 
- All required packages can be installed using setup.sh script. setup.sh script creates a conda environment called rnaseq-pipeline and downloads all packages in it. 
+ All required packages can be installed using `setup.sh` script. setup.sh script creates a conda environment called rnaseq-pipeline and downloads all packages in it. 
 
 ```
 bash setup.sh
 ```
  
  ## Usage
+ 
+ For using the pipeline, conda environment should be activated.
+ 
+ ```
+conda activate rnaseq-pipeline
+```
 
-All arguments can be seen by using help (-h) command.
+
+All arguments can be seen by using `help (-h, --help)` command.
 
 ```
-conda activate rnaseq-pipeline
-
 python rnaseq-pipeline.py -h
+```
 
-usage: rnaseq-pipeline.py [-h] -s  [...] -c  [...] [-r] [-m  [...]] [-t ] [-o ] [-f ] -d  -w  -G  -x  [-T ] [-q ] [-l ] [-i ] [-g ] [-M ] [-n ] [-B ] [-y ] [-p ] [-N ] [-F ] [-L ] [-P ] [-I ] [-C] [-D ]
 
-Run RNASeq Pipeline
+```
+usage: rnaseq-pipeline.py [-h] -s  [...] -c  [...] [-r] [-m  [...]] [-t ] [-o ] [-f ] -d  -R  -G  -x  [-T ] [-q ] [-l ] [-i ] [-g ] [-M ] [-n ] [-B ] [-y ] [-p ] [-N ] [-F ] [-L ] [-P ] [-I ] [-D ]
+
+RNASeq-Pipeline
 
 optional arguments:
   -h, --help                            show this help message and exit
   -s  [ ...], --samples  [ ...]         Sample names
   -c  [ ...], --controls  [ ...]        Control names
-  -r , --replicate                      Technical replicate condition = YES or NO
-  -m  [ ...], --matched_samples  [ ...]
+  -r , --replicate                      Technical replicate condition = YES or NO (default)
+  -m  [ ...], --replicate_samples  [ ...]
                                         if --replicate == YES; Comma seperated matched sample names; sample1_sample2, sample3_sample4
   -t [], --type []                      Sample type; paired (default), single
   -o [], --output []                    Final output; pathway_enrichment (default), trimming, mapping, quantification, diff_exp
   -f [], --is_fastqc []                 Run FastQC or not; YES (default), NO
   -d , --data_dir                       Data folder direction
-  -w , --index_whole_genome             Index genome path
-  -G , --star_gtf                       GTF file path
+  -R , --reference_genome               Reference genome path
+  -G , --gtf_file                       GTF file path
   -x , --star_index                     Folder path to create genome index (if already exist, automatically use the indexed genome in the path)
   -T [], --threads []                   Number of thread (default = 16)
   -q [], --quality []                   Trim galore quality option (default = 20)
@@ -61,7 +69,48 @@ optional arguments:
   -L [], --library_type []              Library type for Salmon (default = A)
   -P [], --p_val_threshold []           p-value threshold for pathfindR (default = 0.05)
   -I [], --iterations []                iteration number for pathfindR (default = 25)
-  -C , --gene_name_converter            'mart_export.txt' file path
   -D [], --create_DAG []                Create Directed Acyclic Graph (DAG) of commands (default = NO)
 
+
 ```
+
+RNASeq-Pipeline works with gzipped .fastq files. Input names should be;
+
+- For pair-end samples: `{sample_name}_{1 or 2}.fastq.gz`
+- For single-end samples: `{sample_name}.fastq.gz`
+
+## Example Command
+
+If reference genome indexed before, RNASeq-Pipeline automatically uses the path in the `--star_index` argument.
+
+```
+python rnaseq-pipeline.py --samples sample1 sample2 sample3 --controls control1 control2 control3 \
+--data_dir /path/to/data/ --reference_genome /path/to/reference_genome --gtf_file /path/to/gtf_file \
+--star_index /path/to/target/folder
+```
+
+Directed Acyclic Graph (DAG) of the analysis can be created by using `--create_DAG` argument.
+
+```
+python rnaseq-pipeline.py --samples sample1 sample2 sample3 --controls control1 control2 control3 \
+--data_dir /path/to/data/ --reference_genome /path/to/reference_genome --gtf_file /path/to/gtf_file \
+--star_index /path/to/target/folder --create_DAG
+```
+
+
+## Technical Replicates
+
+If there are technical replicates in the samples, `--replicate` argument should be set as `YES` and technical replicates should be written with using `--replicate_samples` argument. RNASeq-Pipeline automatically combines technical replicates when running DESeq2.
+
+### Example Command
+```
+python rnaseq-pipeline.py --samples sample1 sample2 sample3 sample4 --controls control1 control2 control3 control4 \
+--replicate YES --replicate_samples sample1_sample2 sample3_sample4 control1_control2 control3_control4 \
+--data_dir /path/to/data/ --reference_genome /path/to/reference_genome --gtf_file /path/to/gtf_file \
+--star_index /path/to/target/folder
+```
+
+
+## Output
+
+All the outputs will be written in seperate folders in the data folder for each step. 
