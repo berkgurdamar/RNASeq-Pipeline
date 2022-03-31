@@ -84,17 +84,24 @@ RNASeq-Pipeline works with gzipped .fastq files. Input names should be;
 If reference genome indexed before, RNASeq-Pipeline automatically uses the path in the `--star_index` argument.If not, index genome will be created into the `--star_index` path.
 
 ```
-python rnaseq-pipeline.py --samples sample1 sample2 sample3 --controls control1 control2 control3 \
---data_dir /path/to/data/ --reference_genome /path/to/reference_genome --gtf_file /path/to/gtf_file \
+python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
+--controls control1 control2 control3 \
+--data_dir /path/to/data/ \
+--reference_genome /path/to/reference_genome \
+--gtf_file /path/to/gtf_file \
 --star_index /path/to/target/folder
 ```
 
 Directed Acyclic Graph (DAG) of the analysis can be created by using `--create_DAG` argument.
 
 ```
-python rnaseq-pipeline.py --samples sample1 sample2 sample3 --controls control1 control2 control3 \
---data_dir /path/to/data/ --reference_genome /path/to/reference_genome --gtf_file /path/to/gtf_file \
---star_index /path/to/target/folder --create_DAG YES
+python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
+--controls control1 control2 control3 \
+--data_dir /path/to/data/ \
+--reference_genome /path/to/reference_genome \
+--gtf_file /path/to/gtf_file \
+--star_index /path/to/target/folder \
+--create_DAG YES
 ```
 
 <img src="https://github.com/berkgurdamar/RNASeq-Pipeline/blob/main/workflow/pipeline_dag.pdf?raw=true" style="max-width:100%;" />
@@ -105,9 +112,13 @@ If there are technical replicates in the samples, `--replicate` argument should 
 
 ### Example Command
 ```
-python rnaseq-pipeline.py --samples sample1 sample2 sample3 sample4 --controls control1 control2 control3 control4 \
---replicate YES --replicate_samples sample1_sample2 sample3_sample4 control1_control2 control3_control4 \
---data_dir /path/to/data/ --reference_genome /path/to/reference_genome --gtf_file /path/to/gtf_file \
+python rnaseq-pipeline.py --samples sample1 sample2 sample3 sample4 \
+--controls control1 control2 control3 control4 \
+--replicate YES \
+--replicate_samples sample1_sample2 sample3_sample4 control1_control2 control3_control4 \
+--data_dir /path/to/data/ \
+--reference_genome /path/to/reference_genome \
+--gtf_file /path/to/gtf_file \
 --star_index /path/to/target/folder
 ```
 
