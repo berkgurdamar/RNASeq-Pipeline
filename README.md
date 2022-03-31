@@ -4,7 +4,7 @@
  RNASeq-Pipeline is a bioinformatics pipeline that can be used for analyzing RNA Sequencing data. 
  RNASeq-Pipeline steps;
  
- - Quality Control with [FastQC](https://github.com/s-andrews/FastQC)
+ - Quality Control with [FastQC](https://github.com/s-andrews/FastQC) and reporting with [MultiQC](https://github.com/ewels/MultiQC)
  - Trimming with [Trim-Galore](https://github.com/FelixKrueger/TrimGalore)
  - Mapping with [STAR](https://github.com/alexdobin/STAR)
  - Quantification with [Salmon](https://github.com/COMBINE-lab/salmon)
@@ -13,7 +13,7 @@
  
 ## Installation
 
- All required packages can be installed using `setup.sh` script. setup.sh script creates a conda environment called `rnaseq-pipeline` and downloads all required packages in it. 
+ All required packages can be installed using `setup.sh` script. `setup.sh` script creates a conda environment called `rnaseq-pipeline` and downloads all required packages in it. 
 
 ```
 bash setup.sh
@@ -92,6 +92,20 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
 --star_index /path/to/target/folder
 ```
 
+You can specify the output of the pipeline with using `--output` argument. 
+If you want to do differential expression analysis as a result, you can set `--output` argument to `diff_exp` and pipeline automatically stops after that step.
+
+```
+python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
+--controls control1 control2 control3 \
+--data_dir /path/to/data/ \
+--reference_genome /path/to/reference_genome \
+--gtf_file /path/to/gtf_file \
+--star_index /path/to/target/folder \
+--output diff_exp
+
+```
+
 Directed Acyclic Graph (DAG) of the analysis can be created by using `--create_DAG` argument.
 
 ```
@@ -111,7 +125,7 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
 
 If there are technical replicates in the samples, `--replicate` argument should be set as `YES` and technical replicates should be written with using `--replicate_samples` argument. RNASeq-Pipeline automatically combines technical replicates when running DESeq2.
 
-### Example Command
+### Example Command with Replicates
 ```
 python rnaseq-pipeline.py --samples sample1 sample2 sample3 sample4 \
 --controls control1 control2 control3 control4 \
