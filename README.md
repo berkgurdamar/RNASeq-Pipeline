@@ -1,4 +1,4 @@
-# RNASeq-Pipeline
+# RNASeq-Pipeline for Quantification and Enrichment Analysis
  
  
  RNASeq-Pipeline is a bioinformatics pipeline that can be used for analyzing RNA Sequencing data. 
