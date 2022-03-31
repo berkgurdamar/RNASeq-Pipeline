@@ -1,3 +1,4 @@
 
 *.log
 .snakemake/metadata/L21udC9kL2F0b20vcHJvamVjdHMvcm5hc2VxL1JOQVNlcS1QaXBlbGluZS9zYW1wbGVzL3BhdGhmaW5kcg==
+env_yaml/rnaseq_pipeline1.yml
