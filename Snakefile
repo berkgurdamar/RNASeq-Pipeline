@@ -1,13 +1,12 @@
 ##################################################
 ## Project: RNASeq
 ## Purpose: Main Snakefile
-## Date: August 2021
+## Date: March 2022
 ## Author: Berk Gürdamar
 ##################################################
 
 
-
-SAMPLES = config["analysis"]["sample"] + config["analysis"]["control"]
+SAMPLES = config["analysis"]["sample"][0] + config["analysis"]["control"][0]
 PATH_SAMPLE = config["analysis"]["data_dir"]
 PATH_QC = os.path.join(PATH_SAMPLE, "results", "qc")
 PATH_TRIM = os.path.join(PATH_SAMPLE, "results", "trimming")
@@ -17,7 +16,7 @@ PATH_STAR_ALIGN = os.path.join(PATH_SAMPLE, "results", "star_alignment")
 PATH_SALMON = os.path.join(PATH_SAMPLE, "results", "salmon")
 PATH_DESEQ = os.path.join(PATH_SAMPLE, "results", "deseq")
 PATH_PATHFINDR = os.path.join(PATH_SAMPLE, "results", "pathfindr")
-MATCHED_SAMPLES = config["analysis"]["matched_samples"]
+MATCHED_SAMPLES = config["analysis"]["replicate_samples"]
 
 
 
@@ -30,7 +29,7 @@ if config["analysis"]["output"] == "trimming":
 elif config["analysis"]["output"] == "mapping":
     RULE_ALL = expand(os.path.join(PATH_STAR_ALIGN, "{sample}", "Aligned.toTranscriptome.out.bam"), sample = SAMPLES)
 elif config["analysis"]["output"] == "quantification":
-    RULE_ALL = expand(os.path.join(PATH_SALMON, "quant_from_bam", "{sample}", "quant.sf"), sample = SAMPLES)
+    RULE_ALL = expand(os.path.join(PATH_SALMON, "{sample}", "quant.sf"), sample = SAMPLES)
 elif config["analysis"]["output"] == "diff_exp":
     RULE_ALL = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0] + "_" + config["analysis"]["control"][0], "deseq_output.csv")
 else:
@@ -123,7 +122,7 @@ else:
 
 rule run_star_index:
     input:
-        whole_genome = config["required"]["star"]["index_whole_genome"]
+        whole_genome = config["required"]["star"]["reference_genome"]
     output:
         index_path = directory(PATH_STAR_IND)
     params:
@@ -232,7 +231,7 @@ else:
 
 rule generate_transcript_file_gffread:
     input:
-        whole_genome = config["required"]["star"]["index_whole_genome"]
+        whole_genome = config["required"]["star"]["reference_genome"]
     output:
         transcript_file = os.path.join(PATH_TRANSCRIPT_FA, "all_transcripts.fa")
     params:
@@ -248,11 +247,11 @@ rule run_salmon:
         transcript_file = os.path.join(PATH_TRANSCRIPT_FA, "all_transcripts.fa"),
         salmon_bam = os.path.join(PATH_STAR_ALIGN, "{fq_name}", "Aligned.toTranscriptome.out.bam")
     output:
-        out_name = os.path.join(PATH_SALMON, "quant_from_bam", "{fq_name}", "quant.sf")
+        out_name = os.path.join(PATH_SALMON, "{fq_name}", "quant.sf")
     params:
         threads = round(config["required"]["threads"]/len(SAMPLES)),
         library_type = config["required"]["salmon"]["library_type"],
-        out_dir = directory(os.path.join(PATH_SALMON, "quant_from_bam", "{fq_name}"))
+        out_dir = directory(os.path.join(PATH_SALMON, "{fq_name}"))
     shell:
         """
         salmon quant -p {params.threads} -t {input.transcript_file} -l {params.library_type} -a {input.salmon_bam} -o {params.out_dir}
@@ -262,16 +261,17 @@ rule run_salmon:
 
 rule run_deseq:
     input:
-        deseq_input = expand(os.path.join(PATH_SALMON, "quant_from_bam", "{fq_name}", "quant.sf"), fq_name = SAMPLES)
+        deseq_input = expand(os.path.join(PATH_SALMON, "{fq_name}", "quant.sf"), fq_name = SAMPLES)
     output:
-        deseq_output = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0] + "_" + config["analysis"]["control"][0], "deseq_output.csv")
+        deseq_output = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0][0] + "_" + config["analysis"]["control"][0][0], "deseq_output.csv")
     params:
         control_ids = config["analysis"]["control"],
         sample_ids = config["analysis"]["sample"],
-        count_table = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0] + "_" + config["analysis"]["control"][0], "count_table.csv"),
-        info_table = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0] + "_" + config["analysis"]["control"][0], "info_table.csv"),
+        count_table = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0][0] + "_" + config["analysis"]["control"][0][0], "count_table.csv"),
+        info_table = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0][0] + "_" + config["analysis"]["control"][0][0], "info_table.csv"),
         replicates = config["analysis"]["replicate"],
-        matched_samples = MATCHED_SAMPLES
+        matched_samples = MATCHED_SAMPLES,
+        gene_name_converter = os.path.join(PATH_DESEQ, "gene_name_converter.csv")
     script:
         "scripts/run_deseq.R"
 
@@ -279,13 +279,13 @@ rule run_deseq:
 
 rule run_pathfindr:
     input:
-        pathfindr_input = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0] + "_" + config["analysis"]["control"][0], "deseq_output.csv")
+        pathfindr_input = os.path.join(PATH_DESEQ, config["analysis"]["sample"][0][0] + "_" + config["analysis"]["control"][0][0], "deseq_output.csv")
     output:
         pathfindr_output = directory(PATH_PATHFINDR)
     params:
         threads = config["required"]["threads"],
         p_val_threshold = config["required"]["pathfindr"]["p_val_threshold"],
         iterations = config["required"]["pathfindr"]["iterations"],
-        gene_name_converter = config["required"]["pathfindr"]["gene_name_converter"]
+        gene_name_converter = os.path.join(PATH_DESEQ, "gene_name_converter.csv")
     script:
         "scripts/run_pathfindr.R"
