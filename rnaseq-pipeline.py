@@ -54,8 +54,8 @@ def run_pipeline(samples, controls, replicate, replicate_samples, data_dir, refe
 
     analysis = dict(
         analysis = dict(
-            sample = samples, # ", ".join(samples)
-            control = controls, # ", ".join(controls)
+            sample = samples,
+            control = controls,
             replicate = replicate,
             replicate_samples = replicate_samples,
             data_dir = data_dir,
