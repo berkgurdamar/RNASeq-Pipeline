@@ -38,7 +38,7 @@ python rnaseq-pipeline.py --help
 ```
 usage: rnaseq-pipeline.py [-h] -s  [...] -c  [...] [-r] [-m  [...]] [-t ] [-o ] [-f ] -d  -R  -G  -x  [-T ] [-q ] [-l ] [-i ] [-g ] [-M ] [-n ] [-B ] [-y ] [-p ] [-N ] [-F ] [-L ] [-P ] [-I ] [-D ]
 
-RNASeq-Pipeline
+RNASeq-Pipeline for Quantification and Enrichment Analysis
 
 optional arguments:
   -h, --help                            show this help message and exit
@@ -70,18 +70,16 @@ optional arguments:
   -P [], --p_val_threshold []           p-value threshold for pathfindR (default = 0.05)
   -I [], --iterations []                iteration number for pathfindR (default = 25)
   -D [], --create_DAG []                Create Directed Acyclic Graph (DAG) of commands (default = NO)
-
-
 ```
 
-RNASeq-Pipeline works with gzipped .fastq files. Input names should be;
+RNASeq-Pipeline can only works with `.fastq.gz` files. Input names should be;
 
 - For pair-end samples: `{sample_name}_{1 or 2}.fastq.gz`
 - For single-end samples: `{sample_name}.fastq.gz`
 
 ## Example Command
 
-If reference genome indexed before, RNASeq-Pipeline automatically uses the path in the `--star_index` argument.If not, index genome will be created into the `--star_index` path.
+If reference genome indexed before, RNASeq-Pipeline automatically uses the indexed genome path in the `--star_index` argument. If not, index genome will be created into the `--star_index` path.
 
 ```
 python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
@@ -92,8 +90,8 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
 --star_index /path/to/target/folder
 ```
 
-You can specify the output of the pipeline with using `--output` argument. 
-If you want to do differential expression analysis as a result, you can set `--output` argument to `diff_exp` and pipeline automatically stops after that step.
+Output of the pipeline can be specified with using `--output` argument. 
+If you want to do differential expression analysis as a last step, you can set `--output` argument to `diff_exp` and pipeline automatically stops after that step.
 
 ```
 python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
@@ -123,7 +121,7 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
 
 ## Technical Replicates
 
-If there are technical replicates in the samples, `--replicate` argument should be set as `YES` and technical replicates should be written with using `--replicate_samples` argument. RNASeq-Pipeline automatically combines technical replicates when running DESeq2.
+If there are technical replicates in the samples, `--replicate` argument should be set as `YES` and technical replicates should be written with using `--replicate_samples` argument. RNASeq-Pipeline automatically combines technical replicates when running `DESeq2`.
 
 ### Example Command with Replicates
 ```
