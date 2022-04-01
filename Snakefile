@@ -1,7 +1,7 @@
 ##################################################
 ## Project: RNASeq
 ## Purpose: Main Snakefile
-## Date: March 2022
+## Date: April 2022
 ## Author: Berk Gürdamar
 ##################################################
 
@@ -264,7 +264,7 @@ rule run_pathfindr:
     output:
         pathfindr_output = directory(PATH_PATHFINDR)
     params:
-        threads = config["required"]["threads"],
+    <   threads = config["required"]["threads"],
         p_val_threshold = config["required"]["pathfindr"]["p_val_threshold"],
         iterations = config["required"]["pathfindr"]["iterations"],
         gene_name_converter = os.path.join(PATH_DESEQ, "gene_name_converter.csv")
