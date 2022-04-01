@@ -189,6 +189,5 @@ All the outputs will be written in seperate folders in the data folder for each 
         ├── enrichment_result.csv
         └── active_snw_search
             └── ...
-
 ```
 
