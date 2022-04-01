@@ -106,8 +106,8 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
 Directed Acyclic Graph (DAG) of the analysis can be created by using `--create_DAG` argument.
 
 ```
-python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
---controls control1 control2 control3 \
+python rnaseq-pipeline.py --samples sample1 sample2 \
+--controls control1 control2 \
 --data_dir /path/to/data/ \
 --reference_genome /path/to/reference_genome \
 --gtf_file /path/to/gtf_file \
