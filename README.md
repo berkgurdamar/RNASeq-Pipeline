@@ -139,5 +139,56 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 sample4 \
 
 All the outputs will be written in seperate folders in the data folder for each step. 
 
+```
+├── sample1_1.fastq.gz
+├── sample1_2.fastq.gz
+├── sample2_1.fastq.gz
+├── sample2_2.fastq.gz
+├── control1_1.fastq.gz
+├── control1_2.fastq.gz
+├── control2_1.fastq.gz
+├── control2_2.fastq.gz
+└── results
+    ├── quality_control
+    │   └── multiqc_report.html
+    ├── transcript_file_salmon
+    │   └── all_transcript.fa
+    ├── trimming
+    │   ├── sample1
+    │   │   └── ...
+    │   ├── sample2
+    │   │   └── ...
+    │   ├── control1
+    │   │   └── ...
+    │   ├── control2
+    │   │   └── ...
+    ├── mapping
+    │   ├── sample1
+    │   │   └── ...
+    │   ├── sample2
+    │   │   └── ...
+    │   ├── control1
+    │   │   └── ...
+    │   ├── control2
+    │   │   └── ...
+    ├── quantification
+    │   ├── sample1
+    │   │   └── ...
+    │   ├── sample2
+    │   │   └── ...
+    │   ├── control1
+    │   │   └── ...
+    │   ├── control2
+    │   │   └── ...
+    ├── differential_expression
+    │   ├── gene_name_converter.csv
+    │   ├── sample1_control1
+    │   │   ├── count_table.csv
+    │   │   └── deseq_output.csv
+    └── enrichment_analysis 
+        ├── enrichment_result.csv
+        └── active_snw_search
+            └── ...
 
+```
 
