@@ -101,7 +101,6 @@ python rnaseq-pipeline.py --samples sample1 sample2 sample3 \
 --gtf_file /path/to/gtf_file \
 --star_index /path/to/target/folder \
 --output diff_exp
-
 ```
 
 Directed Acyclic Graph (DAG) of the analysis can be created by using `--create_DAG` argument.
