@@ -69,12 +69,12 @@ optional arguments:
   -L [], --library_type []              Library type for Salmon (default = A)
   -P [], --p_val_threshold []           p-value threshold for pathfindR (default = 0.05)
   -I [], --iterations []                iteration number for pathfindR (default = 25)
-  -D [], --create_DAG []                Create Directed Acyclic Graph (DAG) of commands (default = NO)
+  -D [], --create_DAG []                Create Directed Acyclic Graph (DAG) of the workflow and exit (default = NO)
 ```
 
 RNASeq-Pipeline can only works with `.fastq.gz` files. Input names should be;
 
-- For pair-end samples: `{sample_name}_{1 or 2}.fastq.gz`
+- For pair-end samples: `{sample_name}_{lane = 1 or 2}.fastq.gz`
 - For single-end samples: `{sample_name}.fastq.gz`
 
 ## Example Command
