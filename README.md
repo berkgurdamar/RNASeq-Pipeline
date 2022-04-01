@@ -155,31 +155,31 @@ All the outputs will be written in seperate folders in the data folder for each 
     │   └── all_transcript.fa
     ├── trimming
     │   ├── sample1
-    │   │   └── ...
+    │   │   └── trimmed files
     │   ├── sample2
-    │   │   └── ...
+    │   │   └── trimmed files
     │   ├── control1
-    │   │   └── ...
+    │   │   └── trimmed files
     │   ├── control2
-    │   │   └── ...
+    │   │   └── trimmed files
     ├── mapping
     │   ├── sample1
-    │   │   └── ...
+    │   │   └── bam files
     │   ├── sample2
-    │   │   └── ...
+    │   │   └── bam files
     │   ├── control1
-    │   │   └── ...
+    │   │   └── bam files
     │   ├── control2
-    │   │   └── ...
+    │   │   └── bam files
     ├── quantification
     │   ├── sample1
-    │   │   └── ...
+    │   │   └── quantification result
     │   ├── sample2
-    │   │   └── ...
+    │   │   └── quantification result
     │   ├── control1
-    │   │   └── ...
+    │   │   └── quantification result
     │   ├── control2
-    │   │   └── ...
+    │   │   └── quantification result
     ├── differential_expression
     │   ├── gene_name_converter.csv
     │   ├── sample1_control1
@@ -188,6 +188,6 @@ All the outputs will be written in seperate folders in the data folder for each 
     └── enrichment_analysis 
         ├── enrichment_result.csv
         └── active_snw_search
-            └── ...
+            └── iterations
 ```
 
