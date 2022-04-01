@@ -2,7 +2,7 @@
 ##################################################
 ## Project: RNASeq-Pipeline
 ## Purpose: Main function for pipeline run
-## Date: March 2022
+## Date: April 2022
 ## Author: Berk Gürdamar
 ##################################################
 
@@ -40,7 +40,7 @@ parser.add_argument("-F", "--readFilesCommand", type = str, metavar = '', requir
 parser.add_argument("-L", "--library_type", type = str, metavar = '', required = False, nargs='?', default = "A", help = "Library type for Salmon (default = A)")
 parser.add_argument("-P", "--p_val_threshold", type = int, metavar = '', required = False, nargs='?', default = 0.05, help = "p-value threshold for pathfindR (default = 0.05)")
 parser.add_argument("-I", "--iterations", type = int, metavar = '', required = False, nargs='?', default = 25, help = "iteration number for pathfindR (default = 25)")
-parser.add_argument("-D", "--create_DAG", type = str, metavar = '', required = False, nargs='?', default = "NO", help = "Create Directed Acyclic Graph (DAG) of commands (default = NO)")
+parser.add_argument("-D", "--create_DAG", type = str, metavar = '', required = False, nargs='?', default = "NO", help = "Create Directed Acyclic Graph (DAG) of the workflow and exit (default = NO)")
 args = parser.parse_args()
 
 
