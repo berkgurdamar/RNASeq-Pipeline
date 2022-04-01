@@ -3,7 +3,7 @@
 ##################################################
 ## Project: RNASeq-Pipeline
 ## Purpose: Setup file
-## Date: March 2022
+## Date: April 2022
 ## Author: Berk Gürdamar
 ##################################################
 
