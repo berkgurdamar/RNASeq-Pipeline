@@ -28,7 +28,6 @@ colnames(count_table) <- snakemake@input[["deseq_input"]]
 
 write.csv2(res[,c(1,2,4)], snakemake@params[["gene_name_converter"]])
 
-
 # replicates --------------------------------------------------------------
 
 sample <- snakemake@params[["sample_ids"]]
