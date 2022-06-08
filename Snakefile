@@ -127,7 +127,7 @@ else:
             out_fq1 = os.path.join(PATH_TRIM, "{fq_name}", "{fq_name}_trimmed.fq.gz")
         params:
             cores = round(config["required"]["threads"]/(len(SAMPLES)*2)),
-            outdir = PATH_TRIM,
+            outdir = os.path.join(PATH_TRIM, "{fq_name}"),
             quality = config["required"]["trimgalore"]["quality"],
             length = config["required"]["trimgalore"]["length"]
         shell:
