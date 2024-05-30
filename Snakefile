@@ -68,8 +68,8 @@ if config["analysis"]["type"] == "paired":
     rule run_multiqc:
         input:
             expand(os.path.join(PATH_QC, "{fq_name}_{FR}_fastqc.html"), fq_name = SAMPLES, FR = [1, 2])
-    	output:
-    		multiqc_report = os.path.join(PATH_MULTIQC, "multiqc_report.html")
+        output:
+            multiqc_report = os.path.join(PATH_MULTIQC, "multiqc_report.html")
     	params:
             multiqc_path = PATH_MULTIQC,
             qc_path = PATH_QC
